@@ -5,8 +5,8 @@ import 'dotenv/config';
 
 
 const client = createClient({
-  projectId:'r1tsztin',
-  token:"skY4bxK1iArxUnf1GdGBLiD61Y72QnzUSRpgRgDRqoBCnUXLchoRgCHKaulQGxOwMO6AlmJgk06Dy0A37l52XLtSJqSsUqHZAa6vWS0AiFzzyOWejMwN2M6cVRjdKoKIOD4Fw1Eyt2zYRtQLqLp7DNREjrLIVYiiysTR8EE9ZlUb26JGups4",
+  projectId:process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
+  token:process.env.SANITY_API_TOKEN,
   dataset: 'production',
   useCdn: true,
   apiVersion: '2025-01-13',

@@ -1,10 +1,34 @@
-import Card from "../comonents/card";
+"use client"
+
 import * as React from 'react';
-import FilterBar from "../comonents/filterbar";
+// import FilterBar from "../comonents/filterbar";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { client } from "@/sanity/lib/client";
+import { Product } from "../../../types/product";
+import { allProducts } from "@/sanity/lib/queries";
+import { addToCart } from "../addtocart/page";
+import { urlFor } from "@/sanity/lib/image";
+import Image from 'next/image';
 
 
 export default function Shop(){
+    const [product, setProduct] = useState<Product[]>([]);
+  
+    useEffect(() => {
+      async function fetchProduct() {
+        const fetchedProduct: Product[] = await client.fetch(allProducts);
+        setProduct(fetchedProduct);
+      }
+      fetchProduct();
+    }, []);
+  
+  
+  const handleAddToCart=(e:React.MouseEvent, product:Product)=>{
+  e.preventDefault()
+  addToCart(product)
+  alert('ADDED TO CART SUCESSFULLY')
+  }
     return(< >
     
 <div className="px-32 bg-white">
@@ -16,31 +40,69 @@ export default function Shop(){
     </div>
   </div>
 
-<FilterBar></FilterBar>
+{/* <FilterBar></FilterBar> */}
 
 
 
-  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mt-10">
+ 
   
-   <Card imgLink={'1.png'} PercentOff={'-30%'} disColor={'bg-rose-400'} Pname={'Syltherine'} Cutprice={'Rp 3.500.000'} Pprice={'Rp 2.500.000'}  PDiscrip={'Stylish cafe chair'}></Card>
-   <Card imgLink={'1.png'} PercentOff={'-30%'} disColor={'bg-rose-400'} Pname={'Syltherine'} Cutprice={'Rp 3.500.000'} Pprice={'Rp 2.500.000'}  PDiscrip={'Stylish cafe chair'}></Card>
-   <Card imgLink={'2.png'} PercentOff={'NEW'} disColor={'bg-blue-400'} Pname={'Loloto'} Cutprice={'2.500.00'} Pprice={'7.000.000'} PDiscrip={' Luxury big sofa'} ></Card>
-   <Card imgLink={'3.png'} PercentOff={'-10%'} disColor={'bg-yellow-300'} Pname={'Respira'} Cutprice={'-30.000'} Pprice={'500.000 '} PDiscrip={'Out door bar table'} ></Card>
-   <Card imgLink={'4.png'} PercentOff={'-20'} disColor={'bg-blue-400'} Pname={'Griffo'} Cutprice={'1.500'} Pprice={'1.500.00'} PDiscrip='Luxury Lamp'></Card>  
-   <Card imgLink={'5.png'} PercentOff={'NEW'} disColor={'bg-rose-400'} Pname={'Muggo'} Cutprice={''} Pprice={'7.000.000'} PDiscrip='Proi Sofa'></Card>  
-   <Card imgLink={'6.png'} PercentOff={'-15%'} disColor={'bg-rose-400'} Pname={'Lopto'} Cutprice={''} Pprice={'1.500.00'} PDiscrip='Comfy big sofa'></Card>  
-   <Card imgLink={'7.png'} PercentOff={'-5%'} disColor={'bg-blue-400'} Pname={'Ruspa'} Cutprice={''} Pprice={'1.500.00'} PDiscrip='Big Sofa '></Card>  
-   
-   <Card imgLink={'1.png'} PercentOff={'-30%'} disColor={'bg-rose-400'} Pname={'Syltherine'} Cutprice={'Rp 3.500.000'} Pprice={'Rp 2.500.000'}  PDiscrip={'Stylish cafe chair'}></Card>
-   <Card imgLink={'1.png'} PercentOff={'-30%'} disColor={'bg-rose-400'} Pname={'Syltherine'} Cutprice={'Rp 3.500.000'} Pprice={'Rp 2.500.000'}  PDiscrip={'Stylish cafe chair'}></Card>
-   <Card imgLink={'2.png'} PercentOff={'NEW'} disColor={'bg-blue-400'} Pname={'Loloto'} Cutprice={'2.500.00'} Pprice={'7.000.000'} PDiscrip={' Luxury big sofa'} ></Card>
-   <Card imgLink={'3.png'} PercentOff={'-10%'} disColor={'bg-yellow-300'} Pname={'Respira'} Cutprice={'-30.000'} Pprice={'500.000 '} PDiscrip={'Out door bar table'} ></Card>
-   <Card imgLink={'1.png'} PercentOff={'-30%'} disColor={'bg-rose-400'} Pname={'Syltherine'} Cutprice={'Rp 3.500.000'} Pprice={'Rp 2.500.000'}  PDiscrip={'Stylish cafe chair'}></Card>
-   <Card imgLink={'1.png'} PercentOff={'-30%'} disColor={'bg-rose-400'} Pname={'Syltherine'} Cutprice={'Rp 3.500.000'} Pprice={'Rp 2.500.000'}  PDiscrip={'Stylish cafe chair'}></Card>
-   <Card imgLink={'2.png'} PercentOff={'NEW'} disColor={'bg-blue-400'} Pname={'Loloto'} Cutprice={'2.500.00'} Pprice={'7.000.000'} PDiscrip={' Luxury big sofa'} ></Card>
-   <Card imgLink={'3.png'} PercentOff={'-10%'} disColor={'bg-yellow-300'} Pname={'Respira'}  Cutprice={'-30.000'} Pprice={'500.000 '} PDiscrip={'Out door bar table'} ></Card>
-  </div>
-  
+  <div className="bg-white p-5">
+
+
+{/* Grid container */}
+<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mt-10">
+      {product.map((product) => (
+        <div
+          key={product._id}
+          className="relative w-full max-w-[285px] h-[466px] bg-white shadow-lg rounded-lg overflow-hidden"
+        >
+          <Link href={`/product/${product.slug.current}`}>
+            {/* Product Image */}
+            {product.productImage && (
+              <Image
+                src={urlFor(product.productImage.asset._ref).url()}
+                alt={product.title}
+                width={200}
+                height={200}
+                className="w-full h-[301px] object-cover"
+              />
+            )}
+            {/* Product Title */}
+            <h3 className="text-lg font-semibold text-[#3A3A3A]">{product.title}</h3>
+            {/* Product Price */}
+            <p className="text-sm font-bold text-black">Price: ${product.price}</p>
+          </Link>
+          
+          {/* Optional Tags */}
+          {product.tags && (
+            <div className="flex flex-wrap gap-2 mt-2">
+              {product.tags.map((tag, index) => (
+                <span
+                  key={index}
+                  className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full"
+                >
+                  #{tag}
+                </span>
+              ))}
+            </div>
+          )}
+          
+          {/* Add to Cart Button */}
+          <button
+  className="bg-[#B88E2F] hover:bg-[#ffc744] mt-1 text-white font-semibold py-2 px-6 rounded-lg shadow-md w-full sm:w-[250px] md:w-[200px] lg:w-[180px] transition-all transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#95a5a6]"
+  onClick={(e) => handleAddToCart(e, product)}
+>
+  ADD TO CART
+</button>
+
+        </div>
+      ))}
+    </div>
+  </div> 
+
+
+
+{/* the lay design */}  
   <div className="bg-gray-100 py-12">
   <div className="container mx-auto px-4">
 
@@ -81,16 +143,12 @@ export default function Shop(){
         <p className="text-gray-600">Dedicated support</p>
       </div>
     </div>
-
-    
   </div>
 </div>
-
+{/* the lay design */}
    
 
-<Link href="/asguard" className="text-gray-900 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium">
-              asguardsofa
-            </Link>
+
 
 </div>
 
